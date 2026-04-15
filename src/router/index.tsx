@@ -1,18 +1,21 @@
+/* eslint-disable react-refresh/only-export-components */
+import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import BasicLayout from '@/layouts'
-import Home from '@/page/home'
-import About from '@/page/about'
-import Dashboard from '@/page/dashboard'
+import ProtectedRoute from '@/components/ProtectedRoute'
+import { WithSuspense } from '@/components/WithSuspense'
+
+// 懒加载页面组件
+const Home = WithSuspense(lazy(() => import('@/page/home')))
+const About = WithSuspense(lazy(() => import('@/page/about')))
+const Dashboard = WithSuspense(lazy(() => import('@/page/dashboard')))
+const NotFound = WithSuspense(lazy(() => import('@/page/404')))
 
 const router = createBrowserRouter([
   {
     path: '/',
     element: <BasicLayout />,
     children: [
-      // {
-      //   index: true,
-      //   element: <Home />,
-      // },
       {
         index: true,
         element: <Home />,
@@ -23,10 +26,28 @@ const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        element: <Dashboard />,
+        // 需要登录才能访问
+        element: (
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        ),
       },
-      // 添加更多页面路由，它们都会使用 BasicLayout
+      // 可以添加需要特定角色的路由
+      // {
+      //   path: 'admin',
+      //   element: (
+      //     <ProtectedRoute requiredRole="admin">
+      //       <AdminPage />
+      //     </ProtectedRoute>
+      //   ),
+      // },
     ],
+  },
+  // 404 页面
+  {
+    path: '*',
+    element: <NotFound />,
   },
 ])
 

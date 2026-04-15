@@ -43,18 +43,25 @@ src/
 ├── app/                 # 应用主组件
 ├── components/          # 公共组件
 │   ├── GlobalHeader/   # 全局头部
-│   └── GlobalFooter/   # 全局底部
+│   ├── GlobalFooter/   # 全局底部
+│   ├── LoadingFallback/ # 加载中组件
+│   ├── WithSuspense/   # Suspense 包装组件
+│   └── ProtectedRoute/ # 路由守卫组件
 ├── layouts/            # 布局组件
 │   └── index.tsx       # 基础布局（包含 Header、Footer 和主题配置）
 ├── page/               # 页面组件
 │   ├── home/          # 首页
 │   ├── about/         # 关于页
-│   └── dashboard/     # 仪表盘页
+│   ├── dashboard/     # 仪表盘页（需要登录）
+│   └── 404/           # 404 页面
 ├── router/            # 路由配置
 │   └── index.tsx      # 路由定义（使用 createBrowserRouter）
 ├── store/             # 状态管理
-│   └── themeStore.ts  # 主题状态（支持亮色/暗色模式切换）
+│   ├── themeStore.ts  # 主题状态（支持亮色/暗色模式切换）
+│   └── authStore.ts   # 认证状态（登录/登出、用户信息）
 ├── styles/            # 全局样式
+├── utils/             # 工具函数
+│   └── withSuspense.tsx # 懒加载辅助函数
 └── index.tsx          # 应用入口
 ```
 
@@ -65,6 +72,17 @@ src/
 - 所有页面共享统一的 `BasicLayout` 布局
 - 支持嵌套路由和动态路由
 - 使用 `<Outlet />` 渲染子路由
+- **懒加载**：所有页面组件使用 `React.lazy()` 按需加载
+- **路由守卫**：支持登录验证和角色权限控制
+- **404 页面**：自动处理未匹配的路由
+
+### 权限控制
+基于 Zustand 实现完整的认证和授权系统：
+- 登录/登出功能
+- 用户信息持久化（localStorage）
+- 路由级别的权限控制
+- 支持角色权限验证（admin、user 等）
+- 未登录自动重定向到登录页
 
 ### 主题系统
 基于 Zustand 和 Ant Design 实现主题切换：
