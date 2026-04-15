@@ -1,0 +1,56 @@
+.header {
+  display: flex;
+  align-items: center;
+  padding: 0 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 40px;
+}
+
+.logo {
+  height: 32px;
+  margin-right: 12px;
+}
+
+.title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #1890ff;
+}
+
+.menu {
+  flex: 1;
+  min-width: 0;
+  border: none;
+}
+
+.themeSwitch {
+  margin-right: 16px;
+}
+
+.loginButton {
+  /* 可以添加自定义样式 */
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .header {
+    padding: 0 16px;
+  }
+
+  .logoContainer {
+    margin-right: 16px;
+  }
+
+  .title {
+    display: none;
+  }
+
+  .themeSwitch {
+    margin-right: 12px;
+  }
+}

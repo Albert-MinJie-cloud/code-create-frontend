@@ -1,0 +1,21 @@
+.layout {
+  min-height: 100vh;
+}
+
+.content {
+  padding: 24px;
+  flex: 1;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+}
+
+@media (max-width: 480px) {
+  .content {
+    padding: 12px;
+  }
+}

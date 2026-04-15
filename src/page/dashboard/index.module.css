@@ -1,0 +1,11 @@
+.welcomeCard {
+  text-align: center;
+}
+
+.welcomeCard h1 {
+  margin-bottom: 16px;
+}
+
+.welcomeCard p {
+  font-size: 16px;
+}

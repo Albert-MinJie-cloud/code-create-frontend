@@ -1,12 +1,14 @@
 # Code Create Frontend
 
-基于 React 19 + TypeScript + Vite 构建的现代化前端应用，启用了 React Compiler 进行自动优化。
+基于 React 19 + TypeScript + Vite + Ant Design 构建的现代化前端应用，启用了 React Compiler 进行自动优化。
 
 ## 技术栈
 
 - **React 19** - 最新版本的 React
 - **TypeScript 6** - 类型安全的 JavaScript
 - **Vite 8** - 快速的构建工具和开发服务器
+- **Ant Design 6** - 企业级 UI 设计语言和组件库
+- **React Router 7** - 声明式路由管理
 - **Zustand** - 轻量级状态管理
 - **React Compiler** - 自动优化 React 组件性能
 - **ESLint** - 代码质量检查
@@ -32,6 +34,48 @@ npm run format:check
 
 # 预览生产构建
 npm run preview
+```
+
+## 项目结构
+
+```
+src/
+├── app/                 # 应用主组件
+├── components/          # 公共组件
+│   ├── GlobalHeader/   # 全局头部
+│   └── GlobalFooter/   # 全局底部
+├── layouts/            # 布局组件
+│   └── index.tsx       # 基础布局（包含 Header、Footer 和主题配置）
+├── page/               # 页面组件
+│   ├── home/          # 首页
+│   ├── about/         # 关于页
+│   └── dashboard/     # 仪表盘页
+├── router/            # 路由配置
+│   └── index.tsx      # 路由定义（使用 createBrowserRouter）
+├── store/             # 状态管理
+│   └── themeStore.ts  # 主题状态（支持亮色/暗色模式切换）
+├── styles/            # 全局样式
+└── index.tsx          # 应用入口
+```
+
+## 核心功能
+
+### 路由管理
+使用 React Router 7 的 `createBrowserRouter` 实现声明式路由：
+- 所有页面共享统一的 `BasicLayout` 布局
+- 支持嵌套路由和动态路由
+- 使用 `<Outlet />` 渲染子路由
+
+### 主题系统
+基于 Zustand 和 Ant Design 实现主题切换：
+- 支持亮色/暗色模式切换
+- 使用 `persist` 中间件持久化主题设置
+- 通过 `ConfigProvider` 全局配置 Ant Design 主题
+
+### 路径别名
+配置了 `@` 别名指向 `src` 目录，简化导入路径：
+```typescript
+import Component from '@/components/Component'
 ```
 
 ## 项目架构
@@ -89,17 +133,6 @@ ESLint 配置包含：
 - 箭头函数参数省略括号（单参数时）
 
 建议在编辑器中安装 Prettier 插件，实现保存时自动格式化。
-
-## 项目结构
-
-```
-src/
-├── App.tsx          # 主应用组件
-├── main.tsx         # React 入口文件（包含 StrictMode）
-├── assets/          # 静态资源（图片、SVG）
-├── App.css          # 组件样式
-└── index.css        # 全局样式
-```
 
 ## 重要说明
 
