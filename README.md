@@ -10,6 +10,7 @@
 - **Zustand** - 轻量级状态管理
 - **React Compiler** - 自动优化 React 组件性能
 - **ESLint** - 代码质量检查
+- **Prettier** - 代码格式化工具
 
 ## 开发命令
 
@@ -22,6 +23,12 @@ npm run build
 
 # 运行代码检查
 npm run lint
+
+# 格式化代码
+npm run format
+
+# 检查代码格式（不修改文件）
+npm run format:check
 
 # 预览生产构建
 npm run preview
@@ -60,13 +67,28 @@ npm run preview
 
 ## 代码规范
 
+### ESLint
+
 ESLint 配置包含：
 - TypeScript ESLint 推荐规则
 - React Hooks 规则（flat config）
 - React Refresh 规则（Vite）
 - 浏览器全局变量
+- Prettier 规则（避免冲突）
 
 项目使用新的 ESLint flat config 格式（`eslint.config.js`）。
+
+### Prettier
+
+代码格式化配置（`.prettierrc`）：
+- 不使用分号
+- 使用单引号
+- 2 空格缩进
+- ES5 风格的尾逗号
+- 每行 80 字符限制
+- 箭头函数参数省略括号（单参数时）
+
+建议在编辑器中安装 Prettier 插件，实现保存时自动格式化。
 
 ## 项目结构
 
