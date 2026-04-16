@@ -9,6 +9,8 @@ import { WithSuspense } from '@/components/WithSuspense'
 const Home = WithSuspense(lazy(() => import('@/page/home')))
 const About = WithSuspense(lazy(() => import('@/page/about')))
 const Dashboard = WithSuspense(lazy(() => import('@/page/dashboard')))
+const Login = WithSuspense(lazy(() => import('@/page/login')))
+const Forbidden = WithSuspense(lazy(() => import('@/page/403')))
 const NotFound = WithSuspense(lazy(() => import('@/page/404')))
 
 const router = createBrowserRouter([
@@ -43,6 +45,16 @@ const router = createBrowserRouter([
       //   ),
       // },
     ],
+  },
+  // 登录页面（不使用 BasicLayout）
+  {
+    path: '/login',
+    element: <Login />,
+  },
+  // 403 页面
+  {
+    path: '/403',
+    element: <Forbidden />,
   },
   // 404 页面
   {
