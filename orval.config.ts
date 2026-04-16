@@ -6,7 +6,6 @@ import { defineConfig } from 'orval'
 // - output.target: 生成的 API 请求代码文件路径（tags-split 模式下为目录）
 // - output.schemas: 生成的 TypeScript 类型文件目录
 // - output.mode: 'tags-split' 按 API 标签分割文件
-// - output.client: 'react-query' 生成 React Query hooks
 // - output.formatter: 使用 Prettier 格式化生成的代码
 // - output.clean: 清理旧的生成文件
 // - override.mutator: 自定义 HTTP 客户端（使用 Axios）
@@ -17,7 +16,6 @@ export default defineConfig({
       mode: 'tags-split',
       target: './src/api/endpoints',
       schemas: './src/api/models',
-      client: 'react-query',
       formatter: 'prettier',
       clean: true,
       override: {

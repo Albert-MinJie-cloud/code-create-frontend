@@ -43,11 +43,8 @@ myAxios.interceptors.response.use(
   }
 )
 
-export const MyAxios = <T>(
-  url: string,
-  config?: AxiosRequestConfig
-): Promise<T> => {
-  return myAxios({ url, ...config }).then(({ data }) => data)
+export const MyAxios = <T>(config: AxiosRequestConfig): Promise<T> => {
+  return myAxios(config).then(({ data }) => data)
 }
 
 export default myAxios
