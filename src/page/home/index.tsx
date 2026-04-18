@@ -20,6 +20,7 @@ function Index() {
         欢迎使用 Code Create
       </h1>
       <p>这是一个基于 React + Vite + Ant Design 的前端项目</p>
+      <a href="https://github.com/Albert-MinJie-cloud">MJ</a>
     </Card>
   )
 }

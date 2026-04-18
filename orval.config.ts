@@ -13,7 +13,7 @@ import { defineConfig } from 'orval'
 export default defineConfig({
   CodeCreate: {
     output: {
-      mode: 'tags-split',
+      mode: 'tags',
       target: './src/api/endpoints',
       schemas: './src/api/models',
       formatter: 'prettier',

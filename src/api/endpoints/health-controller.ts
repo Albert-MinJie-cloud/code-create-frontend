@@ -4,9 +4,9 @@
  * OpenAPI definition
  * OpenAPI spec version: v0
  */
-import type { BaseResponseString } from '../../models'
+import type { BaseResponseString } from '../models'
 
-import { MyAxios } from '../../../utils/request'
+import { MyAxios } from '@/utils/request'
 
 export const healthCheck = () => {
   return MyAxios<BaseResponseString>({ url: `/health/`, method: 'GET' })

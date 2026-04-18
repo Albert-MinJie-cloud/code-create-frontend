@@ -4,7 +4,7 @@
  */
 
 // 导出所有 endpoints
-export * from './endpoints/health-controller/health-controller'
+export * from './endpoints'
 
 // 导出所有 models
 export * from './models'
