@@ -31,6 +31,7 @@ export const updateUser = (userUpdateRequest: UserUpdateRequest) => {
     data: userUpdateRequest,
   })
 }
+
 export const register = (userRegisterRequest: UserRegisterRequest) => {
   return MyAxios<BaseResponseLong>({
     url: `/user/register`,
@@ -42,6 +43,7 @@ export const register = (userRegisterRequest: UserRegisterRequest) => {
 export const userLogout = () => {
   return MyAxios<BaseResponseBoolean>({ url: `/user/logout`, method: 'POST' })
 }
+
 export const userLogin = (userLoginRequest: UserLoginRequest) => {
   return MyAxios<BaseResponseLoginUserVO>({
     url: `/user/login`,
@@ -50,6 +52,7 @@ export const userLogin = (userLoginRequest: UserLoginRequest) => {
     data: userLoginRequest,
   })
 }
+
 export const listUserVOByPage = (userQueryRequest: UserQueryRequest) => {
   return MyAxios<BaseResponsePageUserVO>({
     url: `/user/list/page/vo`,
@@ -58,12 +61,14 @@ export const listUserVOByPage = (userQueryRequest: UserQueryRequest) => {
     data: userQueryRequest,
   })
 }
+
 export const getLoginUser = () => {
   return MyAxios<BaseResponseLoginUserVO>({
     url: `/user/get/login`,
     method: 'POST',
   })
 }
+
 export const deleteUser = (deleteRequest: DeleteRequest) => {
   return MyAxios<BaseResponseBoolean>({
     url: `/user/delete`,
@@ -72,6 +77,7 @@ export const deleteUser = (deleteRequest: DeleteRequest) => {
     data: deleteRequest,
   })
 }
+
 export const addUser = (userAddRequest: UserAddRequest) => {
   return MyAxios<BaseResponseLong>({
     url: `/user/add`,
@@ -80,9 +86,11 @@ export const addUser = (userAddRequest: UserAddRequest) => {
     data: userAddRequest,
   })
 }
+
 export const getUserById = (params: GetUserByIdParams) => {
   return MyAxios<BaseResponseUser>({ url: `/user/get`, method: 'GET', params })
 }
+
 export const getUserVOById = (params: GetUserVOByIdParams) => {
   return MyAxios<BaseResponseUserVO>({
     url: `/user/get/vo`,

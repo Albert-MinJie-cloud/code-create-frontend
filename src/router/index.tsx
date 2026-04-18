@@ -28,7 +28,6 @@ const router = createBrowserRouter([
       },
       {
         path: 'dashboard',
-        // 需要登录才能访问
         element: (
           <ProtectedRoute>
             <Dashboard />
@@ -36,6 +35,7 @@ const router = createBrowserRouter([
         ),
       },
       // 可以添加需要特定角色的路由
+      // 需要登录才能访问
       // {
       //   path: 'admin',
       //   element: (

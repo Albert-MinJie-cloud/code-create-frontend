@@ -1,36 +1,66 @@
 import { useState } from 'react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { Form, Input, Button, Card, Checkbox, message } from 'antd'
-import { UserOutlined, LockOutlined } from '@ant-design/icons'
+import {
+  Form,
+  Input,
+  Button,
+  message,
+  Space,
+  Typography,
+  Layout,
+  Card,
+} from 'antd'
+import { UserOutlined, LockOutlined, CodeOutlined } from '@ant-design/icons'
+import { userLogin } from '@/api'
 import { useAuthStore } from '@/store/authStore'
+import { useThemeStore } from '@/store/themeStore'
 
 import styles from './index.module.css'
 
+const { Title, Text, Link } = Typography
+
 interface LoginForm {
-  username: string
-  password: string
-  remember: boolean
+  userAccount: string
+  userPassword: string
 }
 
 export default function Login() {
   const [loading, setLoading] = useState(false)
   const navigate = useNavigate()
   const location = useLocation()
-  const login = useAuthStore(state => state.login)
+  const themeStore = useThemeStore(state => state.themeStore)
+  const { getLoginUser } = useAuthStore()
 
   const from = (location.state as { from?: string })?.from || '/'
 
-  const onFinish = async (values: LoginForm) => {
+  // 判断是否为暗色主题
+  const isDark = themeStore === 'dark'
+
+  // 根据主题动态设置 logo 样式
+  const logoStyle = {
+    background: isDark ? '#ffffff' : '#000000',
+    boxShadow: isDark
+      ? '0 8px 24px rgba(255, 255, 255,0.2)'
+      : '0 8px 24px rgba(0, 0, 0, 0.3)',
+  }
+
+  const logoIconStyle = {
+    color: isDark ? '#000000' : '#ffffff',
+  }
+
+  const handleSubmit = async (values: LoginForm) => {
     setLoading(true)
     try {
-      const success = await login(values.username, values.password)
-      if (success) {
+      const res = await userLogin(values)
+      if (res.code === 0 && res.data) {
+        await getLoginUser()
         message.success('登录成功')
         navigate(from, { replace: true })
       } else {
-        message.error('用户名或密码错误')
+        message.error('登录失败' + res.message)
       }
     } catch (error) {
+      console.log(error)
       message.error('登录失败，请稍后重试')
     } finally {
       setLoading(false)
@@ -38,58 +68,85 @@ export default function Login() {
   }
 
   return (
-    <div className={styles.loginContainer}>
-      <Card className={styles.loginCard} title="用户登录">
-        <Form
-          name="login"
-          initialValues={{ remember: true }}
-          onFinish={onFinish}
-          autoComplete="off"
-          size="large"
-        >
-          <Form.Item
-            name="username"
-            rules={[
-              { required: true, message: '请输入用户名' },
-              { min: 3, message: '用户名至少 3 个字符' },
-            ]}
-          >
-            <Input
-              prefix={<UserOutlined />}
-              placeholder="用户名"
-              autoComplete="username"
-            />
-          </Form.Item>
+    <Layout>
+      <div className={styles.container}>
+        <Card className={styles.loginBox}>
+          <Space vertical size={24} className={styles.content}>
+            {/* Logo 和标题 */}
+            <div className={styles.header}>
+              <div className={styles.logo} style={logoStyle}>
+                <CodeOutlined
+                  className={styles.logoIcon}
+                  style={logoIconStyle}
+                />
+              </div>
+              <Title level={3} className={styles.title}>
+                欢迎登录
+              </Title>
+              <Text type="secondary" className={styles.subtitle}>
+                Code Create 代码生成平台
+              </Text>
+            </div>
 
-          <Form.Item
-            name="password"
-            rules={[
-              { required: true, message: '请输入密码' },
-              { min: 5, message: '密码至少 5 个字符' },
-            ]}
-          >
-            <Input.Password
-              prefix={<LockOutlined />}
-              placeholder="密码"
-              autoComplete="current-password"
-            />
-          </Form.Item>
+            {/* 登录表单 */}
+            <Form
+              name="login"
+              onFinish={handleSubmit}
+              autoComplete="off"
+              size="large"
+              className={styles.form}
+            >
+              <Form.Item
+                name="userAccount"
+                rules={[
+                  { required: true, message: '请输入账号' },
+                  { min: 4, message: '账号至少 4 个字符' },
+                ]}
+              >
+                <Input
+                  prefix={<UserOutlined className={styles.inputIcon} />}
+                  placeholder="请输入账号"
+                  autoComplete="username"
+                />
+              </Form.Item>
 
-          <Form.Item name="remember" valuePropName="checked">
-            <Checkbox>记住我</Checkbox>
-          </Form.Item>
+              <Form.Item
+                name="userPassword"
+                rules={[
+                  { required: true, message: '请输入密码' },
+                  { min: 6, message: '密码至少 6 个字符' },
+                ]}
+              >
+                <Input.Password
+                  prefix={<LockOutlined className={styles.inputIcon} />}
+                  placeholder="请输入密码"
+                  autoComplete="current-password"
+                />
+              </Form.Item>
 
-          <Form.Item>
-            <Button type="primary" htmlType="submit" loading={loading} block>
-              登录
-            </Button>
-          </Form.Item>
+              <Form.Item>
+                <Button
+                  type="primary"
+                  htmlType="submit"
+                  loading={loading}
+                  block
+                  className={styles.submitBtn}
+                >
+                  登录
+                </Button>
+              </Form.Item>
+            </Form>
 
-          <div className={styles.loginTip}>
-            <p>测试账号：admin / admin</p>
-          </div>
-        </Form>
-      </Card>
-    </div>
+            {/* 底部提示 */}
+            <div className={styles.footer}>
+              <Text type="secondary" className={styles.footerText}>
+                还没有账号？
+                <Link className={styles.link}>立即注册</Link>
+              </Text>
+            </div>
+          </Space>
+        </Card>
+      </div>
+    </Layout>
   )
 }

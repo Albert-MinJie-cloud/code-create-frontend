@@ -1,10 +1,12 @@
-import { Layout, Menu, Button, Switch, theme } from 'antd'
+import { Layout, Menu, Button, Switch, theme, message } from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MoonOutlined, SunOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import logo from '@/assets/react.svg'
 import { useThemeStore } from '@/store/themeStore'
 import { useAuthStore } from '@/store/authStore'
+
+import { userLogout } from '@/api'
 
 import styles from './index.module.css'
 
@@ -58,10 +60,25 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
 
   const handleAuthAction = () => {
     if (isAuthenticated) {
-      logout()
+      userDoLogout()
       navigate('/')
     } else {
       navigate('/login')
+    }
+  }
+
+  const userDoLogout = async () => {
+    try {
+      const res = await userLogout()
+      if (res.code === 0) {
+        logout()
+        message.success('退出登陆成功')
+        navigate('/login')
+      } else {
+        message.error('退出登录失败' + res.message)
+      }
+    } catch (error) {
+      console.log(error)
     }
   }
 
@@ -89,7 +106,7 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
         className={styles.loginButton}
         onClick={handleAuthAction}
       >
-        {isAuthenticated ? `${user?.name} (登出)` : '登录'}
+        {isAuthenticated ? `${user?.userName} (登出)` : '登录'}
       </Button>
     </Header>
   )

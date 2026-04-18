@@ -1,13 +1,14 @@
 import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
+import { getLoginUser } from '@/api/endpoints/user-controller'
+import type { LoginUserVO } from '@/api/models'
 
 interface AuthState {
   isAuthenticated: boolean
-  user: { name: string; role: string } | null
-  token: string | null
-  login: (username: string, password: string) => Promise<boolean>
+  user: LoginUserVO | null
   logout: () => void
-  setToken: (token: string) => void
+  getLoginUser: () => Promise<boolean>
+  setLoginUser: (newLoginUser: LoginUserVO) => void
 }
 
 export const useAuthStore = create<AuthState>()(
@@ -15,25 +16,30 @@ export const useAuthStore = create<AuthState>()(
     set => ({
       isAuthenticated: false,
       user: null,
-      token: null,
-      login: async (username: string, password: string) => {
-        // 模拟登录逻辑，实际项目中应该调用 API
-        if (username === 'admin' && password === 'admin') {
-          const mockToken = 'mock-jwt-token-' + Date.now()
-          set({
-            isAuthenticated: true,
-            user: { name: 'Admin', role: 'admin' },
-            token: mockToken,
-          })
-          return true
+
+      // 获取登陆的用户信息
+      getLoginUser: async () => {
+        try {
+          const response = await getLoginUser()
+          if (response.code === 0 && response.data) {
+            set({ isAuthenticated: true, user: response.data })
+            return true
+          }
+          return false
+        } catch (error) {
+          console.error('getLoginUser失败:', error)
+          return false
         }
-        return false
       },
+
+      // 设置登陆的用户信息
+      setLoginUser: (newLoginUser: LoginUserVO) => {
+        set({ isAuthenticated: true, user: newLoginUser })
+      },
+
+      // 退出登陆
       logout: () => {
-        set({ isAuthenticated: false, user: null, token: null })
-      },
-      setToken: (token: string) => {
-        set({ token })
+        set({ isAuthenticated: false, user: null })
       },
     }),
     {

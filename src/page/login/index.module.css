@@ -1,29 +1,84 @@
-.loginContainer {
+.container {
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 20px;
 }
 
-.loginCard {
-  width: 400px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+.loginBox {
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+  padding: 48px 40px;
 }
 
-.loginCard :global(.ant-card-head-title) {
+.content {
+  width: 100%;
+}
+
+.header {
   text-align: center;
-  font-size: 24px;
-  font-weight: 600;
+  margin-bottom: 8px;
 }
 
-.loginTip {
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+  margin-bottom: 24px;
+  transition: all 0.3s ease;
+}
+
+.logoIcon {
+  font-size: 32px;
+  transition: color 0.3s ease;
+}
+
+.title {
+  margin: 0 0 8px 0 !important;
+  font-size: 28px !important;
+  font-weight: 600 !important;
+  color: #1f2937;
+}
+
+.subtitle {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.form {
+  margin-top: 8px;
+}
+
+.inputIcon {
+  color: #9ca3af;
+}
+
+.submitBtn {
+  height: 48px;
+  font-size: 16px;
+  font-weight: 500;
+  border-radius: 8px;
+  border: none;
+  margin-top: 8px;
+}
+
+.footer {
   text-align: center;
-  color: #999;
-  font-size: 12px;
-  margin-top: 16px;
+  margin-top: 8px;
 }
 
-.loginTip p {
-  margin: 0;
+.footerText {
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.link {
+  margin-left: 4px;
+  font-weight: 500;
 }
