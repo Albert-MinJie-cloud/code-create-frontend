@@ -15,9 +15,9 @@ function ProtectedRoute({ children, requiredRole }: ProtectedRouteProps) {
     return <Navigate to="/login" state={{ from: location }} replace />
   }
 
-  // 需要特定角色权限
-  if (requiredRole && user?.role !== requiredRole) {
-    return <Navigate to="/403" replace />
+  // 需要特定角色权限，但是没有对应权限
+  if (requiredRole && user?.userRole !== requiredRole) {
+    return <Navigate to="/" replace />
   }
 
   return <>{children}</>

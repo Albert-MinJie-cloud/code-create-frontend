@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import BasicLayout from '@/layouts'
@@ -15,6 +14,7 @@ const Dashboard = WithSuspenseLocal(lazy(() => import('@/page/dashboard')))
 
 const Login = WithSuspenseGlobal(lazy(() => import('@/page/login')))
 const Register = WithSuspenseGlobal(lazy(() => import('@/page/register')))
+const UserManage = WithSuspenseGlobal(lazy(() => import('@/page/userManage')))
 const Forbidden = WithSuspenseGlobal(lazy(() => import('@/page/403')))
 const NotFound = WithSuspenseGlobal(lazy(() => import('@/page/404')))
 
@@ -41,14 +41,14 @@ const router = createBrowserRouter([
       },
       // 可以添加需要特定角色的路由
       // 需要登录才能访问
-      // {
-      //   path: 'admin',
-      //   element: (
-      //     <ProtectedRoute requiredRole="admin">
-      //       <AdminPage />
-      //     </ProtectedRoute>
-      //   ),
-      // },
+      {
+        path: '/admin/userManage',
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <UserManage />
+          </ProtectedRoute>
+        ),
+      },
     ],
   },
   // 登录页面（不使用 BasicLayout）

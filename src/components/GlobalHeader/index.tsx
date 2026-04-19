@@ -59,13 +59,14 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
       },
     },
     {
-      key: 'dashboard',
-      label: '看板',
+      key: 'userManage',
+      label: '用户管理',
       onClick: () => {
-        navigate('/dashboard')
+        navigate('/admin/userManage')
       },
+      disabled: user?.userRole !== 'admin',
     },
-  ]
+  ]?.filter(e => !e.disabled)
 
   const items: MenuProps['items'] = [
     {
@@ -74,14 +75,6 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
       onClick: () => {
         userDoLogout()
       },
-    },
-    {
-      key: '2',
-      label: 'Profile',
-    },
-    {
-      key: '3',
-      label: 'Billing',
     },
   ]
 
