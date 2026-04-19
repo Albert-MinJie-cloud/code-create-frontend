@@ -1,30 +1,24 @@
-import { Suspense } from 'react'
-import { Spin } from 'antd'
+import { Logo } from '@/components/Logo'
+
+import styles from './index.module.css'
 
 interface LoadingFallbackProps {
+  fullPage?: boolean
   tip?: string
 }
 
 export const LoadingFallback = ({
+  fullPage = false,
   tip = '加载中...',
-}: LoadingFallbackProps) => (
-  <div
-    style={{
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      minHeight: '400px',
-    }}
-  >
-    <Spin size="large" tip={tip} />
-  </div>
-)
-
-interface WithSuspenseProps {
-  children: React.ReactNode
-  fallback?: React.ReactNode
+}: LoadingFallbackProps) => {
+  return (
+    <div
+      className={fullPage ? styles.loadingFullPage : styles.loadingInContainer}
+    >
+      <div className={styles.loadingContent}>
+        <Logo />
+        <div className={styles.tip}>{tip}</div>
+      </div>
+    </div>
+  )
 }
-
-export const WithSuspense = ({ children, fallback }: WithSuspenseProps) => (
-  <Suspense fallback={fallback || <LoadingFallback />}>{children}</Suspense>
-)

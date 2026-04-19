@@ -1,6 +1,15 @@
-import { Layout, Menu, Button, Switch, theme, message } from 'antd'
+import {
+  Layout,
+  Menu,
+  Button,
+  Switch,
+  theme,
+  message,
+  Dropdown,
+  Space,
+} from 'antd'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { MoonOutlined, SunOutlined } from '@ant-design/icons'
+import { MoonOutlined, SunOutlined, DownOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import logo from '@/assets/react.svg'
 import { useThemeStore } from '@/store/themeStore'
@@ -58,14 +67,23 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
     },
   ]
 
-  const handleAuthAction = () => {
-    if (isAuthenticated) {
-      userDoLogout()
-      navigate('/')
-    } else {
-      navigate('/login')
-    }
-  }
+  const items: MenuProps['items'] = [
+    {
+      key: '1',
+      label: '退出登陆',
+      onClick: () => {
+        userDoLogout()
+      },
+    },
+    {
+      key: '2',
+      label: 'Profile',
+    },
+    {
+      key: '3',
+      label: 'Billing',
+    },
+  ]
 
   const userDoLogout = async () => {
     try {
@@ -73,13 +91,37 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
       if (res.code === 0) {
         logout()
         message.success('退出登陆成功')
-        navigate('/login')
+        navigate('/')
       } else {
         message.error('退出登录失败' + res.message)
       }
     } catch (error) {
       console.log(error)
     }
+  }
+
+  const goLogin = () => {
+    navigate('/login')
+  }
+
+  const renderUser = () => {
+    if (isAuthenticated) {
+      return (
+        <Dropdown menu={{ items }}>
+          <a onClick={e => e.preventDefault()}>
+            <Space>
+              {user?.userName}
+              <DownOutlined />
+            </Space>
+          </a>
+        </Dropdown>
+      )
+    }
+    return (
+      <Button type="primary" className={styles.loginButton} onClick={goLogin}>
+        登录
+      </Button>
+    )
   }
 
   return (
@@ -101,13 +143,8 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
         unCheckedChildren={<SunOutlined />}
         className={styles.themeSwitch}
       />
-      <Button
-        type="primary"
-        className={styles.loginButton}
-        onClick={handleAuthAction}
-      >
-        {isAuthenticated ? `${user?.userName} (登出)` : '登录'}
-      </Button>
+
+      {renderUser()}
     </Header>
   )
 }

@@ -1,0 +1,60 @@
+.logo {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.darklogo {
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(255, 255, 255, 0.2);
+}
+
+.lightlogo {
+  background: #000000;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
+
+.logoIcon {
+  transition: color 0.3s ease;
+}
+
+.darklogoIcon {
+  color: #000000;
+}
+
+.lightlogoIcon {
+  color: #ffffff;
+}
+
+/* 尺寸变体 */
+.small {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+}
+
+.small .logoIcon {
+  font-size: 24px;
+}
+
+.medium {
+  width: 64px;
+  height: 64px;
+  border-radius: 16px;
+}
+
+.medium .logoIcon {
+  font-size: 32px;
+}
+
+.large {
+  width: 80px;
+  height: 80px;
+  border-radius: 20px;
+}
+
+.large .logoIcon {
+  font-size: 40px;
+}

@@ -3,15 +3,20 @@ import { lazy } from 'react'
 import { createBrowserRouter } from 'react-router-dom'
 import BasicLayout from '@/layouts'
 import ProtectedRoute from '@/components/ProtectedRoute'
-import { WithSuspense } from '@/components/WithSuspense'
+import {
+  WithSuspenseGlobal,
+  WithSuspenseLocal,
+} from '@/components/WithSuspense'
 
 // 懒加载页面组件
-const Home = WithSuspense(lazy(() => import('@/page/home')))
-const About = WithSuspense(lazy(() => import('@/page/about')))
-const Dashboard = WithSuspense(lazy(() => import('@/page/dashboard')))
-const Login = WithSuspense(lazy(() => import('@/page/login')))
-const Forbidden = WithSuspense(lazy(() => import('@/page/403')))
-const NotFound = WithSuspense(lazy(() => import('@/page/404')))
+const Home = WithSuspenseLocal(lazy(() => import('@/page/home')))
+const About = WithSuspenseLocal(lazy(() => import('@/page/about')))
+const Dashboard = WithSuspenseLocal(lazy(() => import('@/page/dashboard')))
+
+const Login = WithSuspenseGlobal(lazy(() => import('@/page/login')))
+const Register = WithSuspenseGlobal(lazy(() => import('@/page/register')))
+const Forbidden = WithSuspenseGlobal(lazy(() => import('@/page/403')))
+const NotFound = WithSuspenseGlobal(lazy(() => import('@/page/404')))
 
 const router = createBrowserRouter([
   {
@@ -50,6 +55,11 @@ const router = createBrowserRouter([
   {
     path: '/login',
     element: <Login />,
+  },
+  // 注册页面（不使用 BasicLayout）
+  {
+    path: '/register',
+    element: <Register />,
   },
   // 403 页面
   {
