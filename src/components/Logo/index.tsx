@@ -5,7 +5,7 @@ import { useThemeStore } from '@/store/themeStore'
 import styles from './index.module.css'
 
 interface LogoProps {
-  size?: 'small' | 'medium' | 'large'
+  size?: 'xsmall' | 'small' | 'medium' | 'large'
 }
 
 export const Logo = ({ size = 'medium' }: LogoProps) => {

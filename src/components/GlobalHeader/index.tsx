@@ -11,9 +11,9 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom'
 import { MoonOutlined, SunOutlined, DownOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
-import logo from '@/assets/react.svg'
 import { useThemeStore } from '@/store/themeStore'
 import { useAuthStore } from '@/store/authStore'
+import { Logo } from '@/components/Logo'
 
 import { userLogout } from '@/api'
 
@@ -120,8 +120,7 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
   return (
     <Header className={styles.header} style={{ background: colorBgContainer }}>
       <div className={styles.logoContainer}>
-        <img src={logo} alt="logo" className={styles.logo} />
-        <span className={styles.title}>Code Create</span>
+        <Logo size="xsmall" />
       </div>
       <Menu
         mode="horizontal"

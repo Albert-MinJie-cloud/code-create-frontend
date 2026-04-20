@@ -29,6 +29,17 @@
 }
 
 /* 尺寸变体 */
+.xsmall {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+}
+
+.xsmall .logoIcon {
+  font-size: 18px;
+}
+
+/* 尺寸变体 */
 .small {
   width: 48px;
   height: 48px;
