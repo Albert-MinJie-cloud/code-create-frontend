@@ -5,15 +5,17 @@
  * OpenAPI spec version: v0
  */
 
-export interface UserQueryRequest {
+export interface AppQueryRequest {
   pageNum?: number
   pageSize?: number
   sortField?: string
   sortOrder?: string
   id?: number
-  userName?: string
-  userAccount?: string
-  userProfile?: string
-  userRole?: string
-  excludeId?: number
+  appName?: string
+  cover?: string
+  initPrompt?: string
+  priority?: number
+  codeGenType?: string
+  deployKey?: string
+  userId?: number
 }
