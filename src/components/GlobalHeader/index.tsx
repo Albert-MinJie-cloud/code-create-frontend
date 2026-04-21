@@ -40,6 +40,8 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
     if (path === '/') return ['home']
     if (path === '/about') return ['about']
     if (path === '/dashboard') return ['dashboard']
+    if (path.startsWith('/admin/userManage')) return ['userManage']
+    if (path.startsWith('/admin/appManage')) return ['appManage']
     return []
   }
 
@@ -63,6 +65,14 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
       label: '用户管理',
       onClick: () => {
         navigate('/admin/userManage')
+      },
+      disabled: user?.userRole !== 'admin',
+    },
+    {
+      key: 'appManage',
+      label: '应用管理',
+      onClick: () => {
+        navigate('/admin/appManage')
       },
       disabled: user?.userRole !== 'admin',
     },
