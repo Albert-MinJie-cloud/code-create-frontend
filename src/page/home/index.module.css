@@ -1,106 +1,279 @@
 .container {
-  max-width: 1200px;
+  max-width: 1280px;
   margin: 0 auto;
-  padding: 24px 16px;
+  padding: 0 24px 48px;
 }
 
+/* Hero */
 .hero {
   text-align: center;
-  padding: 48px 0 40px;
+  padding: 64px 0 48px;
+  position: relative;
+}
+
+.heroBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(22, 119, 255, 0.08);
+  color: #1677ff;
+  border-radius: 20px;
+  padding: 4px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  margin-bottom: 20px;
 }
 
 .heroTitle {
-  font-size: 48px !important;
+  font-size: 52px !important;
   font-weight: 800 !important;
-  margin-bottom: 8px !important;
+  line-height: 1.15 !important;
+  letter-spacing: -1px;
+  background: linear-gradient(135deg, #1677ff 0%, #722ed1 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin-bottom: 16px !important;
 }
 
 .heroSubtitle {
-  font-size: 18px;
-  opacity: 0.7;
+  font-size: 17px;
   display: block;
-  margin-bottom: 32px;
+  margin-bottom: 36px;
 }
 
 .promptBox {
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto;
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .promptInput {
-  border-radius: 12px !important;
+  border: none !important;
+  box-shadow: none !important;
   font-size: 15px !important;
   resize: none !important;
+  padding: 4px 0 !important;
+}
+
+.promptInput:focus {
+  box-shadow: none !important;
+}
+
+.promptFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promptHint {
+  font-size: 12px;
 }
 
 .createBtn {
-  align-self: flex-end;
-  border-radius: 8px !important;
-  padding: 0 32px !important;
-  height: 44px !important;
-  font-size: 15px !important;
+  border-radius: 10px !important;
+  padding: 0 28px !important;
+  height: 40px !important;
+  font-size: 14px !important;
+  font-weight: 500 !important;
+}
+
+/* Section */
+.sectionsCard {
+  margin-top: 28px;
+}
+
+.sectionsCard :global(.ant-card-body) {
+  padding: 24px;
 }
 
 .section {
-  margin-top: 48px;
+  margin-top: 0;
+}
+
+.section + .section {
+  margin-top: 40px;
 }
 
 .sectionHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16px;
+  margin-bottom: 20px;
+}
+
+.sectionTitleWrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
 .sectionTitle {
   margin: 0 !important;
+  font-size: 20px !important;
+  font-weight: 600 !important;
 }
 
+.sectionCount {
+  font-size: 13px;
+}
+
+/* App Card */
 .appCard {
   height: 100%;
   border-radius: 12px !important;
   overflow: hidden;
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  cursor: pointer;
 }
 
 .appCard:hover {
   transform: translateY(-4px);
+  box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12) !important;
 }
 
 .appCover {
   width: 100%;
-  height: 160px;
+  height: 150px;
   object-fit: cover;
 }
 
 .appCoverPlaceholder {
   width: 100%;
-  height: 160px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  height: 150px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48px;
-  font-weight: bold;
+  font-size: 42px;
+  font-weight: 700;
   color: white;
   text-transform: uppercase;
 }
 
-.appDesc {
-  font-size: 12px;
-  color: rgba(0, 0, 0, 0.45);
-  margin-bottom: 0 !important;
+.appCardFooter {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 10px;
 }
 
 .deployTag {
-  margin-top: 8px;
+  font-size: 11px;
 }
 
+.cardActions {
+  display: flex;
+  gap: 4px;
+}
+
+.cardActionBtn {
+  padding: 0 6px !important;
+  height: 26px !important;
+  font-size: 12px !important;
+}
+
+.cardActionBtnDanger {
+  color: rgba(255, 77, 79, 0.6) !important;
+}
+
+/* Pagination */
 .pagination {
-  margin-top: 24px;
+  margin-top: 28px;
   display: flex;
   justify-content: center;
+}
+
+/* Placeholder colors per letter */
+.placeholder0 { background: linear-gradient(135deg, #667eea, #764ba2); }
+.placeholder1 { background: linear-gradient(135deg, #f093fb, #f5576c); }
+.placeholder2 { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+.placeholder3 { background: linear-gradient(135deg, #43e97b, #38f9d7); }
+.placeholder4 { background: linear-gradient(135deg, #fa709a, #fee140); }
+.placeholder5 { background: linear-gradient(135deg, #a18cd1, #fbc2eb); }
+
+/* Search inline */
+.searchTrigger {
+  color: rgba(0, 0, 0, 0.35) !important;
+  width: 28px !important;
+  height: 28px !important;
+}
+
+.searchTrigger:hover {
+  color: #1677ff !important;
+  background: rgba(22, 119, 255, 0.06) !important;
+}
+
+.searchInput {
+  width: 180px;
+  border-radius: 20px !important;
+}
+
+.searchClear {
+  font-size: 11px;
+  color: rgba(0, 0, 0, 0.3);
+  cursor: pointer;
+}
+
+.searchClear:hover {
+  color: rgba(0, 0, 0, 0.6);
+}
+
+.searchTag {
+  cursor: pointer;
+  border-radius: 20px;
+  padding: 0 10px;
+  height: 26px;
+  line-height: 24px;
+  font-size: 12px;
+  background: rgba(22, 119, 255, 0.06);
+  border-color: rgba(22, 119, 255, 0.2);
+  color: #1677ff;
+}
+
+/* Load more */
+.moreWrap {
+  margin-top: 28px;
+  display: flex;
+  justify-content: center;
+}
+
+.moreBtn {
+  border-radius: 20px !important;
+  padding: 0 28px !important;
+  color: rgba(0, 0, 0, 0.55);
+  border-color: rgba(0, 0, 0, 0.12) !important;
+}
+
+.moreBtn:hover {
+  color: #1677ff !important;
+  border-color: #1677ff !important;
+}
+
+.noMore {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.3);
+}
+
+/* Card body overrides via :global */
+.promptBox :global(.ant-card-body) {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.appCard :global(.ant-card-body) {
+  padding: 12px 16px 14px;
+}
+
+.appCardName {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.appCardDesc {
+  font-size: 12px;
+  margin-bottom: 0 !important;
 }

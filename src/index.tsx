@@ -2,6 +2,7 @@ import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { RouterProvider } from 'react-router-dom'
 import { ConfigProvider, theme } from 'antd'
+import zhCN from 'antd/locale/zh_CN'
 import { useThemeStore } from '@/store/themeStore'
 import { ErrorBoundary } from '@/components/ErrorBoundary'
 import router from '@/router'
@@ -16,6 +17,7 @@ export const APP = () => {
     <StrictMode>
       <ErrorBoundary>
         <ConfigProvider
+          locale={zhCN}
           theme={{
             algorithm:
               currentTheme === 'dark'

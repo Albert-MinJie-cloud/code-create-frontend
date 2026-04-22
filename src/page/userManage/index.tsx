@@ -3,20 +3,26 @@ import {
   Card,
   Table,
   Button,
-  Space,
-  Modal,
+  Row,
+  Col,
   Form,
   Input,
   Select,
   message,
   Popconfirm,
   Avatar,
+  Modal,
+  Badge,
+  Pagination,
 } from 'antd'
 import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
   UserOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  TeamOutlined,
 } from '@ant-design/icons'
 import type { TableProps } from 'antd'
 import {
@@ -26,6 +32,7 @@ import {
   listUserVOByPage,
 } from '@/api/endpoints/user-controller'
 import type { UserVO, UserAddRequest, UserUpdateRequest } from '@/api'
+import styles from './index.module.css'
 
 interface UserFormData {
   id?: number
@@ -34,6 +41,16 @@ interface UserFormData {
   userAvatar?: string
   userProfile?: string
   userRole: string
+}
+
+const ROLE_OPTIONS = [
+  { label: '管理员', value: 'admin' },
+  { label: '普通用户', value: 'user' },
+]
+
+const ROLE_COLOR: Record<string, 'success' | 'processing'> = {
+  admin: 'processing',
+  user: 'success',
 }
 
 function UserManage() {
@@ -45,22 +62,20 @@ function UserManage() {
   const [total, setTotal] = useState(0)
   const [pageNum, setPageNum] = useState(1)
   const [pageSize, setPageSize] = useState(10)
+  const [searchParams, setSearchParams] = useState<Record<string, unknown>>({})
 
   const [modalVisible, setModalVisible] = useState(false)
   const [modalType, setModalType] = useState<'add' | 'edit'>('add')
   const [editingUser, setEditingUser] = useState<UserVO | null>(null)
 
-  // 加载用户列表
   const loadUserList = useCallback(async () => {
     setLoading(true)
     try {
-      const searchValues = searchForm.getFieldsValue()
       const res = await listUserVOByPage({
         pageNum,
         pageSize,
-        ...searchValues,
+        ...searchParams,
       })
-
       if (res.code === 0 && res.data) {
         setDataSource(res.data.records || [])
         setTotal(res.data.totalRow || 0)
@@ -72,14 +87,13 @@ function UserManage() {
     } finally {
       setLoading(false)
     }
-  }, [pageNum, pageSize, searchForm])
+  }, [pageNum, pageSize, searchParams])
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
-    loadUserList()
+    void loadUserList()
   }, [loadUserList])
 
-  // 打开新增弹窗
   const handleAdd = useCallback(() => {
     setModalType('add')
     setEditingUser(null)
@@ -87,7 +101,6 @@ function UserManage() {
     setModalVisible(true)
   }, [form])
 
-  // 打开编辑弹窗
   const handleEdit = useCallback(
     (record: UserVO) => {
       setModalType('edit')
@@ -104,7 +117,6 @@ function UserManage() {
     [form]
   )
 
-  // 删除用户
   const handleDelete = useCallback(
     async (id: number) => {
       try {
@@ -122,11 +134,9 @@ function UserManage() {
     [loadUserList]
   )
 
-  // 提交表单
   const handleSubmit = useCallback(async () => {
     try {
       const values = await form.validateFields()
-
       if (modalType === 'add') {
         const addData: UserAddRequest = {
           userName: values.userName,
@@ -165,78 +175,98 @@ function UserManage() {
     }
   }, [form, modalType, editingUser, loadUserList])
 
-  // 搜索
   const handleSearch = useCallback(() => {
+    const values = searchForm.getFieldsValue()
+    const cleaned: Record<string, unknown> = {}
+    Object.entries(values).forEach(([k, v]) => {
+      if (v !== '' && v !== undefined && v !== null) cleaned[k] = v
+    })
     setPageNum(1)
-    loadUserList()
-  }, [loadUserList])
+    setSearchParams(cleaned)
+  }, [searchForm])
 
-  // 重置搜索
   const handleReset = useCallback(() => {
     searchForm.resetFields()
     setPageNum(1)
-    loadUserList()
-  }, [searchForm, loadUserList])
+    setSearchParams({})
+  }, [searchForm])
 
   const columns: TableProps<UserVO>['columns'] = [
     {
       title: 'ID',
       dataIndex: 'id',
       key: 'id',
-      width: 80,
+      width: 180,
+      render: (id: number) => <span className={styles.idCell}>{id}</span>,
     },
     {
       title: '头像',
       dataIndex: 'userAvatar',
       key: 'userAvatar',
-      width: 80,
+      width: 72,
       render: (avatar: string) =>
-        avatar ? <Avatar src={avatar} /> : <Avatar icon={<UserOutlined />} />,
+        avatar ? (
+          <Avatar src={avatar} size={36} />
+        ) : (
+          <Avatar icon={<UserOutlined />} size={36} />
+        ),
     },
     {
       title: '用户名',
       dataIndex: 'userName',
       key: 'userName',
+      width: 80,
+      render: (name: string) => (
+        <span style={{ fontWeight: 500 }}>{name || '-'}</span>
+      ),
     },
     {
       title: '账号',
       dataIndex: 'userAccount',
       key: 'userAccount',
-    },
-    {
-      title: '简介',
-      dataIndex: 'userProfile',
-      key: 'userProfile',
-      ellipsis: true,
+      width: 120,
+      render: (account: string) => (
+        <span style={{ color: 'rgba(0,0,0,0.65)' }}>{account || '-'}</span>
+      ),
     },
     {
       title: '角色',
       dataIndex: 'userRole',
       key: 'userRole',
+      width: 100,
       render: (role: string) => {
-        const roleMap: Record<string, string> = {
-          admin: '管理员',
-          user: '普通用户',
-        }
-        return roleMap[role] || role
+        const label = ROLE_OPTIONS.find(o => o.value === role)?.label || role
+        return <Badge status={ROLE_COLOR[role] ?? 'default'} text={label} />
       },
     },
     {
       title: '创建时间',
       dataIndex: 'createTime',
       key: 'createTime',
-      width: 180,
+      width: 170,
+      render: (t: string) =>
+        t ? (
+          <span
+            className={styles.timeCell}
+            style={{ color: 'rgba(0,0,0,0.65)' }}
+          >
+            {t.replace('T', ' ').slice(0, 19)}
+          </span>
+        ) : (
+          '-'
+        ),
     },
     {
       title: '操作',
       key: 'action',
-      width: 150,
+      width: 130,
       fixed: 'right',
       render: (_, record) => (
-        <Space>
+        <div className={styles.actionCell}>
           <Button
             type="link"
             size="small"
+            className={styles.actionBtn}
             icon={<EditOutlined />}
             onClick={() => handleEdit(record)}
           >
@@ -245,91 +275,129 @@ function UserManage() {
           <Popconfirm
             title="确认删除"
             description="确定要删除该用户吗？"
-            onConfirm={() => handleDelete(record.id!)}
+            onConfirm={() => void handleDelete(record.id!)}
             okText="确定"
             cancelText="取消"
           >
-            <Button type="link" size="small" danger icon={<DeleteOutlined />}>
+            <Button
+              type="link"
+              size="small"
+              danger
+              className={styles.actionBtn}
+              icon={<DeleteOutlined />}
+            >
               删除
             </Button>
           </Popconfirm>
-        </Space>
+        </div>
       ),
     },
   ]
 
   return (
-    <Card>
-      <Space
-        size="middle"
-        style={{ width: '100%', display: 'flex', flexDirection: 'column' }}
-      >
-        {/* 搜索栏 */}
-        <Form form={searchForm} layout="inline">
-          <Form.Item name="userName" label="用户名">
-            <Input placeholder="请输入用户名" allowClear />
-          </Form.Item>
-          <Form.Item name="userAccount" label="账号">
-            <Input placeholder="请输入账号" allowClear />
-          </Form.Item>
-          <Form.Item name="userRole" label="角色">
-            <Select
-              placeholder="请选择角色"
-              allowClear
-              style={{ width: 120 }}
-              options={[
-                { label: '管理员', value: 'admin' },
-                { label: '普通用户', value: 'user' },
-              ]}
-            />
-          </Form.Item>
-          <Form.Item>
-            <Space>
-              <Button type="primary" onClick={handleSearch}>
-                搜索
-              </Button>
-              <Button onClick={handleReset}>重置</Button>
-            </Space>
-          </Form.Item>
-        </Form>
+    <div className={styles.page}>
+      <div className={styles.header}>
+        <div className={styles.titleWrap}>
+          <h2 className={styles.title}>用户管理</h2>
+          <span className={styles.subtitle}>管理平台注册用户</span>
+        </div>
+        <Button
+          icon={<ReloadOutlined />}
+          onClick={() => void loadUserList()}
+          loading={loading}
+        >
+          刷新
+        </Button>
+      </div>
 
-        {/* 操作按钮 */}
-        <div>
+      <Card className={styles.filterCard} variant="borderless">
+        <Form
+          form={searchForm}
+          layout="vertical"
+          className={styles.filterForm}
+          onFinish={handleSearch}
+        >
+          <Row gutter={16}>
+            <Col xs={24} sm={12} md={6} lg={5}>
+              <Form.Item name="userName" label="用户名">
+                <Input placeholder="模糊搜索" allowClear />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6} lg={5}>
+              <Form.Item name="userAccount" label="账号">
+                <Input placeholder="精确匹配" allowClear />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6} lg={4}>
+              <Form.Item name="userRole" label="角色">
+                <Select placeholder="全部" allowClear options={ROLE_OPTIONS} />
+              </Form.Item>
+            </Col>
+            <Col xs={24} sm={12} md={6} lg={4}>
+              <Form.Item label=" " colon={false}>
+                <div className={styles.filterActions}>
+                  <Button onClick={handleReset} icon={<ReloadOutlined />}>
+                    重置
+                  </Button>
+                  <Button
+                    type="primary"
+                    htmlType="submit"
+                    icon={<SearchOutlined />}
+                  >
+                    搜索
+                  </Button>
+                </div>
+              </Form.Item>
+            </Col>
+          </Row>
+        </Form>
+      </Card>
+
+      <Card className={styles.tableCard} variant="borderless">
+        <div className={styles.tableToolbar}>
+          <div className={styles.toolbarLeft}>
+            <TeamOutlined style={{ color: '#1677ff', marginRight: 8 }} />
+            用户列表
+            <span className={styles.toolbarCount}>共 {total} 条</span>
+          </div>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleAdd}>
             新增用户
           </Button>
         </div>
-
-        {/* 表格 */}
         <Table
           columns={columns}
           dataSource={dataSource}
           rowKey="id"
           loading={loading}
-          pagination={{
-            current: pageNum,
-            pageSize,
-            total,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: total => `共 ${total} 条`,
-            onChange: (page, size) => {
+          scroll={{ x: 900 }}
+          pagination={false}
+        />
+        <div className={styles.paginationBar}>
+          <Pagination
+            current={pageNum}
+            pageSize={pageSize}
+            total={total}
+            showSizeChanger
+            showQuickJumper
+            showTotal={t => `共 ${t} 条`}
+            onChange={(page, size) => {
               setPageNum(page)
               setPageSize(size)
-            },
-          }}
-        />
-      </Space>
+            }}
+          />
+        </div>
+      </Card>
 
-      {/* 新增/编辑弹窗 */}
       <Modal
         title={modalType === 'add' ? '新增用户' : '编辑用户'}
         open={modalVisible}
         onOk={handleSubmit}
         onCancel={() => setModalVisible(false)}
-        width={600}
+        width={520}
+        okText="确定"
+        cancelText="取消"
       >
-        <Form form={form} layout="vertical" style={{ marginTop: 20 }}>
+        <Form form={form} layout="vertical" style={{ marginTop: 16 }}>
           <Form.Item
             name="userName"
             label="用户名"
@@ -337,7 +405,6 @@ function UserManage() {
           >
             <Input placeholder="请输入用户名" />
           </Form.Item>
-
           {modalType === 'add' && (
             <Form.Item
               name="userAccount"
@@ -347,32 +414,23 @@ function UserManage() {
               <Input placeholder="请输入账号" />
             </Form.Item>
           )}
-
           <Form.Item name="userAvatar" label="头像URL">
             <Input placeholder="请输入头像URL" />
           </Form.Item>
-
           <Form.Item name="userProfile" label="简介">
             <Input.TextArea placeholder="请输入简介" rows={3} />
           </Form.Item>
-
           <Form.Item
             name="userRole"
             label="角色"
             rules={[{ required: true, message: '请选择角色' }]}
             initialValue="user"
           >
-            <Select
-              placeholder="请选择角色"
-              options={[
-                { label: '管理员', value: 'admin' },
-                { label: '普通用户', value: 'user' },
-              ]}
-            />
+            <Select placeholder="请选择角色" options={ROLE_OPTIONS} />
           </Form.Item>
         </Form>
       </Modal>
-    </Card>
+    </div>
   )
 }
 
