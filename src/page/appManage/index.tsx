@@ -51,6 +51,7 @@ const cleanParams = (obj: Record<string, unknown>) => {
   return result
 }
 
+// 应用管理页面
 function AppManage() {
   const [searchForm] = Form.useForm()
 
