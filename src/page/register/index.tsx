@@ -92,7 +92,7 @@ export default function Register() {
                 name="userPassword"
                 rules={[
                   { required: true, message: '请输入密码' },
-                  { min: 6, message: '密码至少 6 个字符' },
+                  { min: 8, message: '密码至少 8 个字符' },
                 ]}
               >
                 <Input.Password
