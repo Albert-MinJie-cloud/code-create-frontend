@@ -1,0 +1,114 @@
+.markdownBody {
+  font-size: 14px;
+  line-height: 1.7;
+  word-break: break-word;
+}
+
+.markdownBody p {
+  margin: 0 0 8px;
+}
+
+.markdownBody p:last-child {
+  margin-bottom: 0;
+}
+
+.markdownBody ul,
+.markdownBody ol {
+  margin: 0 0 8px;
+  padding-left: 20px;
+}
+
+.markdownBody li {
+  margin-bottom: 4px;
+}
+
+.markdownBody h1,
+.markdownBody h2,
+.markdownBody h3,
+.markdownBody h4,
+.markdownBody h5,
+.markdownBody h6 {
+  margin: 12px 0 8px;
+  font-weight: 600;
+}
+
+.markdownBody h1 {
+  font-size: 1.3em;
+}
+
+.markdownBody h2 {
+  font-size: 1.15em;
+}
+
+.markdownBody h3 {
+  font-size: 1.05em;
+}
+
+.markdownBody blockquote {
+  margin: 0 0 8px;
+  padding: 8px 12px;
+  border-left: 3px solid rgba(0, 0, 0, 0.15);
+  color: rgba(0, 0, 0, 0.55);
+}
+
+.markdownBody table {
+  width: 100%;
+  margin: 0 0 8px;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.markdownBody th,
+.markdownBody td {
+  padding: 6px 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  text-align: left;
+}
+
+.markdownBody th {
+  background: rgba(0, 0, 0, 0.04);
+  font-weight: 600;
+}
+
+.markdownBody hr {
+  margin: 12px 0;
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.markdownBody img {
+  max-width: 100%;
+  border-radius: 6px;
+}
+
+.codeBlock {
+  margin: 8px 0;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.codeHeader {
+  display: flex;
+  align-items: center;
+  padding: 6px 14px;
+  background: #282c34;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.codeLang {
+  font-size: 12px;
+  color: #abb2bf;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.inlineCode {
+  padding: 2px 6px;
+  margin: 0 2px;
+  background: rgba(0, 0, 0, 0.06);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 4px;
+  font-size: 0.9em;
+  font-family: 'SF Mono', 'Fira Code', 'Fira Mono', monospace;
+}

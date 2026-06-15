@@ -22,6 +22,7 @@ import { getMyAppById, deployApp } from '@/api/endpoints/app-controller'
 import { listAppChatHistory } from '@/api/endpoints/chat-history-controller'
 import type { AppVO, ChatHistory } from '@/api'
 import { useAuthStore } from '@/store/authStore'
+import MarkdownRenderer from '@/components/MarkdownRenderer'
 import styles from './index.module.css'
 
 const { Header, Content } = Layout
@@ -63,9 +64,49 @@ function AppChat() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const messageListRef = useRef<HTMLDivElement>(null)
+  const contentRef = useRef<HTMLDivElement>(null)
+  const dividerRef = useRef<HTMLDivElement>(null)
   const hasSentInitPrompt = useRef(false)
   const prevHistoryLengthRef = useRef(0)
   const appRef = useRef<AppVO | null>(null)
+
+  const [chatPanelWidth, setChatPanelWidth] = useState(420)
+  const [dragging, setDragging] = useState(false)
+
+  const handlePointerDown = useCallback((e: React.PointerEvent) => {
+    const divider = dividerRef.current
+    if (!divider) return
+    divider.setPointerCapture(e.pointerId)
+    setDragging(true)
+    document.body.style.userSelect = 'none'
+    document.body.style.cursor = 'col-resize'
+  }, [])
+
+  const handlePointerMove = useCallback(
+    (e: React.PointerEvent) => {
+      if (!dragging || !contentRef.current) return
+      const rect = contentRef.current.getBoundingClientRect()
+      const newWidth = e.clientX - rect.left
+      const minChatWidth = 320
+      const minPreviewWidth = 200
+      const dividerWidth = 6
+      const maxChatWidth = rect.width - minPreviewWidth - dividerWidth
+      setChatPanelWidth(
+        Math.max(minChatWidth, Math.min(maxChatWidth, newWidth))
+      )
+    },
+    [dragging]
+  )
+
+  const handlePointerUp = useCallback((e: React.PointerEvent) => {
+    const divider = dividerRef.current
+    if (divider) {
+      divider.releasePointerCapture(e.pointerId)
+    }
+    setDragging(false)
+    document.body.style.userSelect = ''
+    document.body.style.cursor = ''
+  }, [])
 
   // 保持 appRef 同步最新值
   useEffect(() => {
@@ -377,10 +418,14 @@ function AppChat() {
         </div>
       </Header>
 
-      <Content className={styles.content}>
+      <Content className={styles.content} ref={contentRef}>
         <div
           className={styles.chatPanel}
-          style={{ background: colorBgContainer }}
+          style={{
+            background: colorBgContainer,
+            width: chatPanelWidth,
+            minWidth: 320,
+          }}
         >
           <div className={styles.messageList} ref={messageListRef}>
             {hasMoreHistory && (
@@ -419,21 +464,28 @@ function AppChat() {
                   />
                 )}
                 <div
-                  className={styles.messageBubble}
+                  className={
+                    msg.role === 'user' ? styles.userBubble : styles.aiBubble
+                  }
                   style={{
                     background: msg.role === 'user' ? colorPrimary : undefined,
                     color: msg.role === 'user' ? '#fff' : undefined,
                     borderColor: colorBorder,
                   }}
                 >
-                  {msg.content ||
-                    (msg.role === 'assistant' &&
+                  {msg.content ? (
+                    msg.role === 'assistant' ? (
+                      <MarkdownRenderer content={msg.content} />
+                    ) : (
+                      msg.content
+                    )
+                  ) : msg.role === 'assistant' &&
                     aiStreaming &&
                     idx === allMessages.length - 1 ? (
-                      <Spin size="small" />
-                    ) : (
-                      ''
-                    ))}
+                    <Spin size="small" />
+                  ) : (
+                    ''
+                  )}
                 </div>
                 {msg.role === 'user' && (
                   <Avatar icon={<UserOutlined />} style={{ flexShrink: 0 }} />
@@ -475,9 +527,14 @@ function AppChat() {
         </div>
 
         <div
-          className={styles.previewPanel}
-          style={{ borderLeft: `1px solid ${colorBorder}` }}
-        >
+          ref={dividerRef}
+          className={`${styles.divider} ${dragging ? styles.dividerActive : ''}`}
+          onPointerDown={handlePointerDown}
+          onPointerMove={handlePointerMove}
+          onPointerUp={handlePointerUp}
+        />
+
+        <div className={styles.previewPanel}>
           {showPreview && previewSrc ? (
             <iframe
               key={previewKey}
