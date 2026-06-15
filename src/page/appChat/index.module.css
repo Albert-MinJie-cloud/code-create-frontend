@@ -48,6 +48,7 @@
 
 /* 左侧对话区 */
 .chatPanel {
+  width: 600px;
   display: flex;
   flex-direction: column;
   flex-shrink: 0;
