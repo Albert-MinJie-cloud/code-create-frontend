@@ -73,6 +73,9 @@ function AppChat() {
   const [chatPanelWidth, setChatPanelWidth] = useState(420)
   const [dragging, setDragging] = useState(false)
 
+  const baseUrl =
+    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8123/api'
+
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     const divider = dividerRef.current
     if (!divider) return
@@ -131,6 +134,7 @@ function AppChat() {
         if (res.data.deployKey) {
           setShowPreview(true)
           setPreviewKey(k => k + 1)
+          setDeployedUrl(`${baseUrl}/static/${res.data.deployKey}/`)
         }
       } else {
         message.error(res.message || '加载应用失败')
@@ -240,8 +244,6 @@ function AppChat() {
       const assistantMsg: ChatMessage = { role: 'assistant', content: '' }
       setMessages(prev => [...prev, assistantMsg])
 
-      const baseUrl =
-        import.meta.env.VITE_API_BASE_URL || 'http://localhost:8123/api'
       const url = `${baseUrl}/app/chat/gen/code?appId=${appId}&message=${encodeURIComponent(text)}`
 
       const eventSource = new EventSource(url, { withCredentials: true })
@@ -334,6 +336,7 @@ function AppChat() {
       const res = await deployApp({ appId: appId as unknown as number })
       if (res.code === 0 && res.data) {
         setDeployedUrl(res.data)
+        await loadApp()
         message.success('部署成功！')
         Modal.success({
           title: '部署成功',
@@ -355,7 +358,7 @@ function AppChat() {
     } finally {
       setDeploying(false)
     }
-  }, [appId])
+  }, [appId, loadApp])
 
   const previewSrc = app
     ? `http://localhost:8123/api/static/${app.codeGenType}_${appId}/`
