@@ -23,6 +23,7 @@ import { listAppChatHistory } from '@/api/endpoints/chat-history-controller'
 import type { AppVO, ChatHistory } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
+import { API_BASE_URL } from '@/config/env'
 import styles from './index.module.css'
 
 const { Header, Content } = Layout
@@ -35,7 +36,6 @@ interface ChatMessage {
 
 function AppChat() {
   const { appId } = useParams<{ appId: string }>()
-  console.log('AppChat rendered with appId:', appId)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const user = useAuthStore(state => state.user)
@@ -73,8 +73,7 @@ function AppChat() {
   const [chatPanelWidth, setChatPanelWidth] = useState(420)
   const [dragging, setDragging] = useState(false)
 
-  const baseUrl =
-    import.meta.env.VITE_API_BASE_URL || 'http://localhost:8123/api'
+  const baseUrl = API_BASE_URL
 
   const handlePointerDown = useCallback((e: React.PointerEvent) => {
     const divider = dividerRef.current
@@ -293,7 +292,7 @@ function AppChat() {
         }
       }
     },
-    [appId, sending, aiStreaming, loadApp]
+    [appId, sending, aiStreaming, baseUrl, loadApp]
   )
 
   // 自动发送初始消息：自己的 app + 无对话历史 + 有 initPrompt

@@ -248,12 +248,6 @@ function Home() {
   )
 
   const renderAppCard = (app: AppVO, showActions = false) => {
-    const previewSrc = app
-      ? `http://localhost:8123/api/static/${app.codeGenType}_${app.id}/`
-      : ''
-
-    console.log('Preview URL:', previewSrc) // 调试输出预览链接
-
     return (
       <Col xs={24} sm={12} md={8} lg={6} key={app.id}>
         <Card
