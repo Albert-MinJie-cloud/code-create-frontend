@@ -7,7 +7,7 @@
 import type { UserVO } from './userVO'
 
 export interface AppVO {
-  id?: number
+  id: number
   appName?: string
   cover?: string
   initPrompt?: string

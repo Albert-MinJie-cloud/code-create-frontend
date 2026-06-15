@@ -23,7 +23,7 @@ import { listAppChatHistory } from '@/api/endpoints/chat-history-controller'
 import type { AppVO, ChatHistory } from '@/api'
 import { useAuthStore } from '@/store/authStore'
 import MarkdownRenderer from '@/components/MarkdownRenderer'
-import { API_BASE_URL } from '@/config/env'
+import { API_BASE_URL, getStaticPreviewUrl } from '@/config/env'
 import styles from './index.module.css'
 
 const { Header, Content } = Layout
@@ -359,9 +359,8 @@ function AppChat() {
     }
   }, [appId, loadApp])
 
-  const previewSrc = app
-    ? `http://localhost:8123/api/static/${app.codeGenType}_${appId}/`
-    : ''
+  const previewSrc =
+    app && getStaticPreviewUrl(app?.codeGenType || 'default', app.id)
 
   // 将历史消息转换为 ChatMessage 格式
   const historyMessages: ChatMessage[] = chatHistory.map(h => ({
