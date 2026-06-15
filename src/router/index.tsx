@@ -16,6 +16,9 @@ const Login = WithSuspenseGlobal(lazy(() => import('@/page/login')))
 const Register = WithSuspenseGlobal(lazy(() => import('@/page/register')))
 const UserManage = WithSuspenseGlobal(lazy(() => import('@/page/userManage')))
 const AppManage = WithSuspenseGlobal(lazy(() => import('@/page/appManage')))
+const ChatHistoryManage = WithSuspenseGlobal(
+  lazy(() => import('@/page/chatHistoryManage'))
+)
 const AppEdit = WithSuspenseGlobal(lazy(() => import('@/page/appEdit')))
 const Forbidden = WithSuspenseGlobal(lazy(() => import('@/page/403')))
 const NotFound = WithSuspenseGlobal(lazy(() => import('@/page/404')))
@@ -54,6 +57,14 @@ const router = createBrowserRouter([
         element: (
           <ProtectedRoute requiredRole="admin">
             <AppManage />
+          </ProtectedRoute>
+        ),
+      },
+      {
+        path: '/admin/chatHistoryManage',
+        element: (
+          <ProtectedRoute requiredRole="admin">
+            <ChatHistoryManage />
           </ProtectedRoute>
         ),
       },

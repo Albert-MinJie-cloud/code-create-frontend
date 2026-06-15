@@ -1,0 +1,89 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 4px 4px 0;
+}
+
+.titleWrap {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  color: rgba(0, 0, 0, 0.88);
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.filterCard :global(.ant-card-body) {
+  padding: 20px 24px 4px;
+}
+
+.filterForm :global(.ant-form-item) {
+  margin-bottom: 16px;
+}
+
+.filterActions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 8px;
+}
+
+.tableCard :global(.ant-card-body) {
+  padding: 8px 0 0;
+}
+
+.tableToolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 24px;
+  border-bottom: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+.toolbarLeft {
+  font-size: 15px;
+  font-weight: 500;
+  color: rgba(0, 0, 0, 0.88);
+}
+
+.toolbarCount {
+  margin-left: 8px;
+  color: rgba(0, 0, 0, 0.45);
+  font-weight: 400;
+  font-size: 13px;
+}
+
+.paginationBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 24px;
+  border-top: 1px solid rgba(5, 5, 5, 0.06);
+}
+
+.idCell {
+  white-space: nowrap;
+}
+
+.timeCell {
+  white-space: nowrap;
+}
+
+.messageCell {
+  white-space: nowrap;
+}

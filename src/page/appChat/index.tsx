@@ -19,7 +19,9 @@ import {
   LinkOutlined,
 } from '@ant-design/icons'
 import { getMyAppById, deployApp } from '@/api/endpoints/app-controller'
-import type { AppVO } from '@/api'
+import { listAppChatHistory } from '@/api/endpoints/chat-history-controller'
+import type { AppVO, ChatHistory } from '@/api'
+import { useAuthStore } from '@/store/authStore'
 import styles from './index.module.css'
 
 const { Header, Content } = Layout
@@ -32,14 +34,20 @@ interface ChatMessage {
 
 function AppChat() {
   const { appId } = useParams<{ appId: string }>()
+  console.log('AppChat rendered with appId:', appId)
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const user = useAuthStore(state => state.user)
   const {
     token: { colorBgContainer, colorBorder, colorPrimary },
   } = theme.useToken()
 
   const [app, setApp] = useState<AppVO | null>(null)
   const [appLoading, setAppLoading] = useState(true)
+
+  const [chatHistory, setChatHistory] = useState<ChatHistory[]>([])
+  const [hasMoreHistory, setHasMoreHistory] = useState(false)
+  const [loadingHistory, setLoadingHistory] = useState(false)
 
   const [messages, setMessages] = useState<ChatMessage[]>([])
   const [inputValue, setInputValue] = useState('')
@@ -54,7 +62,15 @@ function AppChat() {
   const [deployedUrl, setDeployedUrl] = useState('')
 
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const messageListRef = useRef<HTMLDivElement>(null)
   const hasSentInitPrompt = useRef(false)
+  const prevHistoryLengthRef = useRef(0)
+  const appRef = useRef<AppVO | null>(null)
+
+  // 保持 appRef 同步最新值
+  useEffect(() => {
+    appRef.current = app
+  }, [app])
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -88,14 +104,82 @@ function AppChat() {
   }, [appId, navigate])
 
   useEffect(() => {
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadApp()
   }, [loadApp])
 
-  // 流结束 + 应用 codeGenType 就绪 后，统一触发预览（确保 iframe URL 正确）
+  // 加载对话历史（仅依赖 appId，通过 ref 读取最新 app）
+  const loadChatHistory = useCallback(
+    async (lastCreateTime?: string) => {
+      if (!appId) return
+      setLoadingHistory(true)
+      try {
+        const res = await listAppChatHistory(appId as unknown as number, {
+          // pageSize: 10,
+          ...(lastCreateTime ? { lastCreateTime } : {}),
+        })
+        if (res.code === 0 && res.data) {
+          const rawRecords = res.data.records || []
+          const records = [...rawRecords].sort((a, b) =>
+            (a.createTime || '').localeCompare(b.createTime || '')
+          )
+          if (lastCreateTime) {
+            setChatHistory(prev => [...records, ...prev])
+          } else {
+            setChatHistory(records)
+            // 如果没有部署 key，但历史记录 >= 2 条，也展示预览
+            if (!appRef.current?.deployKey && records.length >= 2) {
+              setShowPreview(true)
+              setPreviewKey(k => k + 1)
+            }
+          }
+          setHasMoreHistory(rawRecords.length >= 10)
+        }
+      } catch {
+        // 首次加载静默处理，加载更多时提示
+        if (lastCreateTime) {
+          message.error('加载更多对话历史失败')
+        }
+      } finally {
+        setLoadingHistory(false)
+      }
+    },
+    [appId]
+  )
+
+  // 加载完 app 后加载对话历史
+  useEffect(() => {
+    if (app && appId) {
+      void loadChatHistory()
+    }
+  }, [app, appId, loadChatHistory])
+
+  // 加载更多历史时，保持滚动位置
+  useEffect(() => {
+    if (
+      chatHistory.length > prevHistoryLengthRef.current &&
+      prevHistoryLengthRef.current > 0
+    ) {
+      const list = messageListRef.current
+      if (list) {
+        const prevScrollHeight = list.scrollHeight
+        requestAnimationFrame(() => {
+          list.scrollTop = list.scrollHeight - prevScrollHeight
+        })
+      }
+    }
+    prevHistoryLengthRef.current = chatHistory.length
+  }, [chatHistory.length])
+
+  const handleLoadMore = () => {
+    const earliestTime = chatHistory[0]?.createTime
+    if (earliestTime) {
+      void loadChatHistory(earliestTime)
+    }
+  }
+
+  // 流结束 + 应用 codeGenType 就绪 后，统一触发预览
   useEffect(() => {
     if (streamCompleted && app?.codeGenType) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
       setShowPreview(true)
       setPreviewKey(k => k + 1)
       setStreamCompleted(false)
@@ -122,7 +206,6 @@ function AppChat() {
       const eventSource = new EventSource(url, { withCredentials: true })
       let receivedAnyMessage = false
 
-      // 标记流结束 + 重新加载应用信息（保证 codeGenType 拿到最新值）
       const finishStream = async (success: boolean) => {
         eventSource.close()
         setSending(false)
@@ -149,7 +232,6 @@ function AppChat() {
         })
       }
 
-      // 兼容后端可能发送的自定义结束事件
       eventSource.addEventListener('done', () => {
         void finishStream(true)
       })
@@ -157,9 +239,6 @@ function AppChat() {
         void finishStream(true)
       })
 
-      // EventSource 在服务端关闭连接后，浏览器会触发 onerror 并尝试自动重连
-      // - 收到过消息：视为正常结束
-      // - 完全没收到消息：视为真错误
       eventSource.onerror = () => {
         if (receivedAnyMessage) {
           void finishStream(true)
@@ -174,13 +253,31 @@ function AppChat() {
     [appId, sending, aiStreaming, loadApp]
   )
 
+  // 自动发送初始消息：自己的 app + 无对话历史 + 有 initPrompt
   useEffect(() => {
     const initPrompt = searchParams.get('prompt')
-    if (initPrompt && !hasSentInitPrompt.current && !appLoading && appId) {
+    if (
+      initPrompt &&
+      !hasSentInitPrompt.current &&
+      !appLoading &&
+      app &&
+      user &&
+      app.userId === user.id &&
+      chatHistory.length === 0 &&
+      !loadingHistory
+    ) {
       hasSentInitPrompt.current = true
       void sendMessage(initPrompt)
     }
-  }, [appLoading, appId, searchParams, sendMessage])
+  }, [
+    appLoading,
+    app,
+    user,
+    chatHistory.length,
+    loadingHistory,
+    searchParams,
+    sendMessage,
+  ])
 
   const handleSend = useCallback(() => {
     const text = inputValue.trim()
@@ -223,10 +320,20 @@ function AppChat() {
     ? `http://localhost:8123/api/static/${app.codeGenType}_${appId}/`
     : ''
 
+  // 将历史消息转换为 ChatMessage 格式
+  const historyMessages: ChatMessage[] = chatHistory.map(h => ({
+    role: (h.messageType === 'user' ? 'user' : 'assistant') as
+      | 'user'
+      | 'assistant',
+    content: h.message || '',
+  }))
+
+  const allMessages = [...historyMessages, ...messages]
+
   if (appLoading) {
     return (
       <div className={styles.loadingWrap}>
-        <Spin size="large" tip="加载中..." />
+        <Spin size="large" />
       </div>
     )
   }
@@ -275,8 +382,19 @@ function AppChat() {
           className={styles.chatPanel}
           style={{ background: colorBgContainer }}
         >
-          <div className={styles.messageList}>
-            {messages.length === 0 && (
+          <div className={styles.messageList} ref={messageListRef}>
+            {hasMoreHistory && (
+              <div className={styles.loadMoreBar}>
+                <Button
+                  type="link"
+                  loading={loadingHistory}
+                  onClick={handleLoadMore}
+                >
+                  加载更多
+                </Button>
+              </div>
+            )}
+            {allMessages.length === 0 && (
               <div className={styles.emptyChat}>
                 <RobotOutlined
                   className={styles.emptyChatIcon}
@@ -287,7 +405,7 @@ function AppChat() {
                 </Text>
               </div>
             )}
-            {messages.map((msg, idx) => (
+            {allMessages.map((msg, idx) => (
               <div
                 key={idx}
                 className={
@@ -311,7 +429,7 @@ function AppChat() {
                   {msg.content ||
                     (msg.role === 'assistant' &&
                     aiStreaming &&
-                    idx === messages.length - 1 ? (
+                    idx === allMessages.length - 1 ? (
                       <Spin size="small" />
                     ) : (
                       ''

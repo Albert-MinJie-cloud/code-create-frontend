@@ -42,6 +42,7 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
     if (path === '/dashboard') return ['dashboard']
     if (path.startsWith('/admin/userManage')) return ['userManage']
     if (path.startsWith('/admin/appManage')) return ['appManage']
+    if (path.startsWith('/admin/chatHistoryManage')) return ['chatHistoryManage']
     return []
   }
 
@@ -73,6 +74,14 @@ const GlobalHeader = ({ menuItems }: GlobalHeaderProps) => {
       label: '应用管理',
       onClick: () => {
         navigate('/admin/appManage')
+      },
+      disabled: user?.userRole !== 'admin',
+    },
+    {
+      key: 'chatHistoryManage',
+      label: '对话管理',
+      onClick: () => {
+        navigate('/admin/chatHistoryManage')
       },
       disabled: user?.userRole !== 'admin',
     },

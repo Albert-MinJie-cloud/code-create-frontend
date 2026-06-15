@@ -12,6 +12,7 @@ import {
   Tooltip,
   Card,
   Typography,
+  type InputRef,
 } from 'antd'
 
 const { Text, Paragraph } = Typography
@@ -58,7 +59,7 @@ interface SearchInputProps {
 function SearchInput({ value, onChange }: SearchInputProps) {
   const [open, setOpen] = useState(false)
   const [draft, setDraft] = useState(value)
-  const inputRef = useRef<HTMLInputElement>(null)
+  const inputRef = useRef<InputRef>(null)
 
   const handleOpen = () => {
     setDraft(value)
@@ -92,7 +93,10 @@ function SearchInput({ value, onChange }: SearchInputProps) {
           draft ? (
             <CloseOutlined
               className={styles.searchClear}
-              onMouseDown={e => { e.preventDefault(); handleClear() }}
+              onMouseDown={e => {
+                e.preventDefault()
+                handleClear()
+              }}
             />
           ) : null
         }
@@ -189,10 +193,12 @@ function Home() {
   }, [])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadMyApps(myPage, mySearch)
   }, [loadMyApps, myPage, mySearch])
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     void loadGoodApps(goodPage, goodSearch)
   }, [loadGoodApps, goodPage, goodSearch])
 
@@ -211,7 +217,9 @@ function Home() {
       const res = await addApp({ initPrompt: prompt.trim() })
       if (res.code === 0 && res.data) {
         message.success('应用创建成功，正在跳转...')
-        navigate(`/app/chat/${res.data}?prompt=${encodeURIComponent(prompt.trim())}`)
+        navigate(
+          `/app/chat/${res.data}?prompt=${encodeURIComponent(prompt.trim())}`
+        )
       } else {
         message.error(res.message || '创建失败')
       }
@@ -239,69 +247,91 @@ function Home() {
     [loadMyApps, myPage, mySearch]
   )
 
-  const renderAppCard = (app: AppVO, showActions = false) => (
-    <Col xs={24} sm={12} md={8} lg={6} key={app.id}>
-      <Card
-        hoverable
-        className={styles.appCard}
+  const renderAppCard = (app: AppVO, showActions = false) => {
+    const previewSrc = app
+      ? `http://localhost:8123/api/static/${app.codeGenType}_${app.id}/`
+      : ''
 
-        cover={
-          app.cover ? (
-            <img src={app.cover} alt={app.appName} className={styles.appCover} />
-          ) : (
-            <div className={`${styles.appCoverPlaceholder} ${pickColor(app.id)}`}>
-              {app.appName?.charAt(0)?.toUpperCase() || 'A'}
-            </div>
-          )
-        }
-        onClick={() => navigate(`/app/chat/${app.id}`)}
-      >
-        <Text strong ellipsis={{ tooltip: app.appName }} className={styles.appCardName}>
-          {app.appName || '未命名应用'}
-        </Text>
-        <Paragraph
-          type="secondary"
-          ellipsis={{ rows: 2, tooltip: app.initPrompt }}
-          className={styles.appCardDesc}
+    console.log('Preview URL:', previewSrc) // 调试输出预览链接
+
+    return (
+      <Col xs={24} sm={12} md={8} lg={6} key={app.id}>
+        <Card
+          hoverable
+          className={styles.appCard}
+          cover={
+            app.cover ? (
+              <img
+                src={app.cover}
+                alt={app.appName}
+                className={styles.appCover}
+              />
+            ) : (
+              <div
+                className={`${styles.appCoverPlaceholder} ${pickColor(app.id)}`}
+              >
+                {app.appName?.charAt(0)?.toUpperCase() || 'A'}
+              </div>
+            )
+          }
+          onClick={() => navigate(`/app/chat/${app.id}`)}
         >
-          {app.initPrompt || '暂无描述'}
-        </Paragraph>
-        <div className={styles.appCardFooter}>
-          <div>
-            {app.deployKey && (
-              <Tag color="success" className={styles.deployTag}>已部署</Tag>
+          <Text
+            strong
+            ellipsis={{ tooltip: app.appName }}
+            className={styles.appCardName}
+          >
+            {app.appName || '未命名应用'}
+          </Text>
+          <Paragraph
+            type="secondary"
+            ellipsis={{ rows: 2, tooltip: app.initPrompt }}
+            className={styles.appCardDesc}
+          >
+            {app.initPrompt || '暂无描述'}
+          </Paragraph>
+          <div className={styles.appCardFooter}>
+            <div>
+              {app.deployKey && (
+                <Tag color="success" className={styles.deployTag}>
+                  已部署
+                </Tag>
+              )}
+            </div>
+            {showActions && (
+              <div
+                className={styles.cardActions}
+                onClick={e => e.stopPropagation()}
+              >
+                <Tooltip title="编辑">
+                  <Button
+                    type="text"
+                    size="small"
+                    className={styles.cardActionBtn}
+                    icon={<EditOutlined />}
+                    onClick={() => navigate(`/app/edit/${app.id}`)}
+                  />
+                </Tooltip>
+                <Popconfirm
+                  title="确认删除该应用？"
+                  onConfirm={() => void handleDeleteMyApp(app.id!)}
+                  okText="确定"
+                  cancelText="取消"
+                >
+                  <Button
+                    type="text"
+                    size="small"
+                    className={`${styles.cardActionBtn} ${styles.cardActionBtnDanger}`}
+                    icon={<DeleteOutlined />}
+                  />
+                </Popconfirm>
+              </div>
             )}
           </div>
-          {showActions && (
-            <div className={styles.cardActions} onClick={e => e.stopPropagation()}>
-              <Tooltip title="编辑">
-                <Button
-                  type="text"
-                  size="small"
-                  className={styles.cardActionBtn}
-                  icon={<EditOutlined />}
-                  onClick={() => navigate(`/app/edit/${app.id}`)}
-                />
-              </Tooltip>
-              <Popconfirm
-                title="确认删除该应用？"
-                onConfirm={() => void handleDeleteMyApp(app.id!)}
-                okText="确定"
-                cancelText="取消"
-              >
-                <Button
-                  type="text"
-                  size="small"
-                  className={`${styles.cardActionBtn} ${styles.cardActionBtnDanger}`}
-                  icon={<DeleteOutlined />}
-                />
-              </Popconfirm>
-            </div>
-          )}
-        </div>
-      </Card>
-    </Col>
-  )
+        </Card>
+      </Col>
+    )
+  }
 
   return (
     <div className={styles.container}>
@@ -329,7 +359,9 @@ function Home() {
             }}
           />
           <div className={styles.promptFooter}>
-            <Text type="secondary" className={styles.promptHint}>Shift + Enter 换行</Text>
+            <Text type="secondary" className={styles.promptHint}>
+              Shift + Enter 换行
+            </Text>
             <Button
               type="primary"
               icon={<SendOutlined />}
@@ -349,10 +381,17 @@ function Home() {
             <div className={styles.sectionHeader}>
               <div className={styles.sectionTitleWrap}>
                 <h3 className={styles.sectionTitle}>我的应用</h3>
-                {myTotal > 0 && <Text type="secondary" className={styles.sectionCount}>{myTotal} 个</Text>}
+                {myTotal > 0 && (
+                  <Text type="secondary" className={styles.sectionCount}>
+                    {myTotal} 个
+                  </Text>
+                )}
                 <SearchInput
                   value={mySearch}
-                  onChange={val => { setMySearch(val); setMyPage(1) }}
+                  onChange={val => {
+                    setMySearch(val)
+                    setMyPage(1)
+                  }}
                 />
               </div>
             </div>
@@ -378,7 +417,9 @@ function Home() {
                     查看更多应用
                   </Button>
                 ) : (
-                  <Text type="secondary" className={styles.noMore}>已加载全部</Text>
+                  <Text type="secondary" className={styles.noMore}>
+                    已加载全部
+                  </Text>
                 )}
               </div>
             )}
@@ -389,10 +430,17 @@ function Home() {
           <div className={styles.sectionHeader}>
             <div className={styles.sectionTitleWrap}>
               <h3 className={styles.sectionTitle}>精选应用</h3>
-              {goodTotal > 0 && <Text type="secondary" className={styles.sectionCount}>{goodTotal} 个</Text>}
+              {goodTotal > 0 && (
+                <Text type="secondary" className={styles.sectionCount}>
+                  {goodTotal} 个
+                </Text>
+              )}
               <SearchInput
                 value={goodSearch}
-                onChange={val => { setGoodSearch(val); setGoodPage(1) }}
+                onChange={val => {
+                  setGoodSearch(val)
+                  setGoodPage(1)
+                }}
               />
             </div>
           </div>
@@ -418,7 +466,9 @@ function Home() {
                   查看更多应用
                 </Button>
               ) : (
-                <Text type="secondary" className={styles.noMore}>已加载全部</Text>
+                <Text type="secondary" className={styles.noMore}>
+                  已加载全部
+                </Text>
               )}
             </div>
           )}
